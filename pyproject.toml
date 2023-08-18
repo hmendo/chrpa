@@ -3,8 +3,8 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "chrpa_test"
-version = "0.0.1"
+name = "chrpa"
+version = "0.0.4"
 authors = [
   { name="HM & GP", email="hmendo@sandia.gov" },
 ]
