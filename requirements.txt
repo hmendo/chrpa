@@ -31,4 +31,4 @@ sphinxcontrib.bibtex
 nbformat
 nbconvert
 coverage
-sphinx-rtd-theme
+sphinx_rtd_theme
