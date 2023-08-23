@@ -10,7 +10,7 @@ authors = [
 ]
 description = "Climate Hazards Return Period Analysis"
 readme = "README.md"
-requires-python = ">=3.7.8"
+requires-python = ">=3.10.8"
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
