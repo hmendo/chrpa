@@ -1,3 +1,9 @@
-sphinx==5.0.2
-sphinx-rtd-theme==1.1.1
-readthedocs-sphinx-search==0.1.1
+ipykernel
+nbsphinx
+nbsphinx-link
+sphinx-copybutton
+sphinx_rtd_theme
+sphinxcontrib.bibtex
+nbformat
+nbconvert
+coverage
