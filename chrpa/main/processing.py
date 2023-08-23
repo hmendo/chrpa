@@ -1,12 +1,17 @@
+"""
+chrpa:  climate hazards return period analysis
+"""
+
+#import os
+import datetime
+import pyextremes
+
 import numpy as np
 import netCDF4 as nc
-import os
 import pandas as pd
-import datetime
-import matplotlib.pyplot as plt
-import seaborn as sns
+#import matplotlib.pyplot as plt
+#import seaborn as sns
 from geopy.distance import great_circle
-import pyextremes
 
 
 pd.set_option('display.max_columns', None)
@@ -189,8 +194,11 @@ def make_ordered_time_weather_lists(nc_files, wstat_indices, ncwvar):
 
 
 def timedelta_to_continuous_w_weather(
-        time_data_list, weather_data_list,
-        wvar, start_time, start_time_format="%Y-%m-%d %H:%M:%S",
+        time_data_list,
+        weather_data_list,
+        wvar,
+        start_time,
+        start_time_format="%Y-%m-%d %H:%M:%S",
         td_unit='days'):
 
     """
@@ -247,10 +255,10 @@ def timedelta_to_continuous_w_weather(
 
         all_weather = np.concatenate([all_weather, weather_data_list[i]])
 
-    timeweather_DF = pd.DataFrame({'time': all_times, wvar: all_weather})
-    return timeweather_DF
+    timeweather_df = pd.DataFrame({'time': all_times, wvar: all_weather})
+    return timeweather_df
 
-def convert_PrecipRate_to_mm(precip_df, tint, wvar):
+def convert_preciprate_to_mm(precip_df, tint, wvar):
 
     """
     Converts precipitation rate (in [kg/m^2 s]) to total depth (in mm)
@@ -381,7 +389,7 @@ def convert_to_mm_daily(precip_df, tint, tvar, wvar, aggfun):
 
     """
 
-    precip_df = convert_PrecipRate_to_mm(precip_df, tint, wvar)
+    precip_df = convert_preciprate_to_mm(precip_df, tint, wvar)
     precip_df = convert_to_daily(precip_df, tvar, aggfun)
     return precip_df
 
@@ -625,7 +633,7 @@ def myextremes(ann_df, rp_array, wvar, alpha=None):
 
     return out
 
-def find_rl_location(future_df, rl):
+def find_rl_location(future_df, rt_lv):
     """
     Finds a return period corresponding to a specified return level in
     a data frame of return-periods/return-levels as output by
@@ -652,7 +660,7 @@ def find_rl_location(future_df, rl):
                   description: lower confidence interval for return
                   values of specified return period (index)
 
-    rl : float
+    rt_lv : float
         Return level of interest for which a corresponding return
         period should be identified.
 
@@ -663,7 +671,7 @@ def find_rl_location(future_df, rl):
 
     """
 
-    df = future_df.copy()
-    rp_diff = df.loc[:, 'return value']-rl #return period
+    future_df = future_df.copy()
+    rp_diff = future_df.loc[:, 'return value']-rt_lv #return period
     return_period = (abs(rp_diff)).idxmin() #future location
     return return_period
