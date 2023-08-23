@@ -77,7 +77,7 @@ def test_timedelta_to_continous_w_weather():
 
 def test_convert_preciprate_to_mm():
     test_df = pd.DataFrame({'time': [1,2], 'precip': [2, None]})
-    precip_df_mm = main.convert_PrecipRate_to_mm(test_df, 5, 'precip')
+    precip_df_mm = main.convert_preciprate_to_mm(test_df, 5, 'precip')
     assert precip_df_mm['precip'][0] == 36000
     assert len(precip_df_mm['precip']) == 1
     return
