@@ -35,6 +35,6 @@ formats: all
 python:
    install:
    - requirements: docs/requirements.txt
-    # Install our python package before building the docs -- Lines below fix errors of readthedocs not finding automodules/autodocs
-    - method: pip
-      path: .
+   # Install our python package before building the docs -- Lines below fix errors of readthedocs not finding automodules/autodocs
+   - method: pip
+     path: .
