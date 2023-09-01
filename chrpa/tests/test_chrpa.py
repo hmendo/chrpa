@@ -152,10 +152,11 @@ def test_get_annual_max():
                             datetime(2023, 1, 2, 10)],
                             'weather': [4, 2, 0, 1, 3, 5]})
     test_rename = {'weather': 'MAX_weather'}
-    output = main.get_annual_max(test_df, test_rename)
+    output = main.get_annual_max(test_df, test_rename, 'mymodel')
     assert output['MAX_weather'][0] == 4
     assert output["MAX_weather"][1] == 5
     assert len(output['year']) == 2
+    assert output['model'][0] == 'mymodel'
 
 def test_myextremes():
     test_df = pd.DataFrame({'year' : [1978, 1979, 1980],
