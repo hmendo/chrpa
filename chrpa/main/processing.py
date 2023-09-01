@@ -531,7 +531,7 @@ def summary_stat_fun(daily_df_current, daily_df_future, wmodel, site):
         )
     return summary_stats_current, summary_stats_future
 
-def get_annual_max(daily_df, max_dict_rename):
+def get_annual_max(daily_df, max_dict_rename, wmodel):
     """
     Takes in a pandas data frame for daily weather and outputs annual
     maximum for the years covered in the input data. Function also
@@ -558,6 +558,9 @@ def get_annual_max(daily_df, max_dict_rename):
         frame so as to distinguish from input data (e.g., from 'precip'
         in dailyDF to 'MaxPrecip' in output data frame).
 
+    wmodel : str
+        Name for the climate model used for weather data sets
+
     Returns
     -------
     pandas.DataFrames with annual maximum weather for years covered in
@@ -569,6 +572,7 @@ def get_annual_max(daily_df, max_dict_rename):
     daily_df.drop(columns='date', inplace=True)
     daily_df = daily_df.groupby('year').max().reset_index()
     daily_df.rename(columns=max_dict_rename, inplace=True)
+    daily_df['model'] = wmodel
     return daily_df
 
 def myextremes(ann_df, rp_array, wvar, alpha=None):
