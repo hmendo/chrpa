@@ -23,7 +23,7 @@ The package is delineated into the following directories. Refer to the `examples
 │   
 ├───docs
 │   
-└───example
+└───Examples
 ```
 
 More information about these modules is available at [readthedocs](https://chrpa.readthedocs.io/en/latest/).
