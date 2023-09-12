@@ -2,15 +2,15 @@
 chrpa:  climate hazards return period analysis
 """
 
-#import os
+import os
 import datetime
 import pyextremes
 
 import numpy as np
 import netCDF4 as nc
 import pandas as pd
-#import matplotlib.pyplot as plt
-#import seaborn as sns
+import matplotlib.pyplot as plt
+import seaborn as sns
 from geopy.distance import great_circle
 
 
@@ -531,7 +531,7 @@ def summary_stat_fun(daily_df_current, daily_df_future, wmodel, site):
         )
     return summary_stats_current, summary_stats_future
 
-def get_annual_max(daily_df, max_dict_rename, wmodel):
+def get_annual_max(daily_df, max_dict_rename, wmodel, period):
     """
     Takes in a pandas data frame for daily weather and outputs annual
     maximum for the years covered in the input data. Function also
@@ -561,6 +561,9 @@ def get_annual_max(daily_df, max_dict_rename, wmodel):
     wmodel : str
         Name for the climate model used for weather data sets
 
+    period: str
+        Name for time period being considered (e.g., 'current' or 'future')
+
     Returns
     -------
     pandas.DataFrames with annual maximum weather for years covered in
@@ -570,10 +573,11 @@ def get_annual_max(daily_df, max_dict_rename, wmodel):
     daily_df = daily_df.copy()
     daily_df['year'] = daily_df['date'].apply(lambda x: x.year)
     daily_df.drop(columns='date', inplace=True)
-    daily_df = daily_df.groupby('year').max().reset_index()
-    daily_df.rename(columns=max_dict_rename, inplace=True)
-    daily_df['model'] = wmodel
-    return daily_df
+    annual_df = daily_df.groupby('year').max().reset_index()
+    annual_df.rename(columns=max_dict_rename, inplace=True)
+    annual_df['model'] = wmodel
+    annual_df['period'] = period
+    return annual_df
 
 def myextremes(ann_df, rp_array, wvar, alpha=None):
     """
@@ -679,3 +683,155 @@ def find_rl_location(future_df, rt_lv):
     rp_diff = future_df.loc[:, 'return value']-rt_lv #return period
     return_period = (abs(rp_diff)).idxmin() #future location
     return return_period
+
+def combined_boxplots(plotDF, wflag, site_name, savedir):
+    """
+    Generates boxplots of weather data.  Takes in a pandas data frame for annual extreme weather as captured by
+    multiple weather models.  Requires categorical column for weather model and
+    for the data time period (i.e, whether the data is currently/historically
+    measured, or if the data is predicted by a weather model). Function then
+    generates a boxplot for the data in the input data frame, capturing the
+    different models in the x-axis, and where the time period is captured by
+    the plot hues.
+
+
+
+    Parameters
+    ----------
+    plotDF: pandas.DataFrame
+        Index:
+            RangeIndex
+        Columns:
+            Name: model, dtype: string object, description: climate model names
+            Name: period, dtype: string object, description: label for 'current'
+                or 'future' time period since data frame has combined 'current'
+                and 'future' data.
+            Name: year, dtype: int, description: year for
+            Name: MaxPrecip or MaxWind, dtype: float64, description: any
+                annual-max weather parameter (e.g., precipitation or wind)
+
+    wflag : str
+        flag that determines wich weather variable is being plotted
+        (i.e., 'precip' or 'wind')
+
+    site_name : str
+        Name of site being analyzed
+
+    savedir : str
+        Relative or absolute path of where to save generated boxplots
+
+    Returns
+    -------
+    None
+
+    """
+    # "combined" = combined current and future
+    #plot_df has both, current and future, data
+    #do I want a columns dictionary????  Think about the workflow and how things end up
+
+    if wflag == 'precip':
+        plotcol = 'MaxPrecip'
+        ylabel = 'precip (mm)'
+        title = 'Annual max precip data: '+site_name
+
+    elif wflag == 'wind':
+        plotcol = 'MaxWind'
+        ylabel = 'wind (m/s)'
+        title = 'Annual max wind data: '+site_name
+
+
+    myfigsize=(8,6)
+    fig, ax = plt.subplots(figsize=myfigsize)
+    # plot_df.plot(x='model', y='max_wind')
+    #
+
+    sns.boxplot(x=plotDF.model, y=plotDF[plotcol], hue=plotDF.period, ax=ax)
+    ax.set_ylabel(ylabel)
+    ax.set_title(title)
+    ax.legend()
+    fig.tight_layout()
+    savenm = site_name+'_boxplot.png'
+    fig.savefig(os.path.join(savedir, savenm), dpi=300)
+
+
+def line_plot(site_name, period, singleDF, wflag, savedir, hue=None):
+    """
+    Generates boxplots of weather data.  Takes in a pandas data frame for annual extreme weather as captured by
+    multiple weather models.  Requires categorical column for weather model and
+    for the data time period (i.e, whether the data is currently/historically
+    measured, or if the data is predicted by a weather model). Function then
+    generates a boxplot for the data in the input data frame, capturing the
+    different models in the x-axis, and where the time period is captured by
+    the plot hues.
+
+
+
+    Parameters
+    ----------
+    site_name : str
+        Name of site being analyzed
+
+    period : str
+        label for time period being analyzed (e.g., 'current' or 'future')
+
+    singleDF: pandas.DataFrame
+        Index:
+            RangeIndex
+        Columns:
+            Name: model, dtype: string object, description: climate model names
+            Name: period, dtype: string object, description: label for 'current'
+                or 'future' time period since data frame has isolated 'current'
+                or 'future' data.
+            Name: year, dtype: int, description: year for
+            Name: MaxPrecip or MaxWind, dtype: float64, description: any
+                annual-max weather parameter (e.g., precipitation or wind)
+
+    wflag : str
+        flag that determines wich weather variable is being plotted
+        (i.e., 'precip' or 'wind')
+
+    savedir : str
+        Relative or absolute path of where to save generated boxplots
+
+    hue : str
+        column name for the corresponding to the different models to generate
+        line plots of different colors based on the different models considred
+
+    Returns
+    -------
+    None
+
+    """
+
+    #site_name = site name
+    #period = 'Current' or 'Future'
+    #single_df has only current or only future data
+    #wflag = weather variable = 'MaxWind' or 'MaxPrecip'
+    #hue should be set equal to the 'model' when having a dataframe with multiple models
+
+    myfigsize=(8,6)
+    fig, ax = plt.subplots(figsize=myfigsize)
+    #plot_df.plot(x='model', y='max_wind')
+    if wflag=='wind':
+        ylabel = 'wind (m/s)'
+        title = period+'-period annual max wind: '+site_name
+        plotcol = 'MaxWind'
+
+    elif wflag=='precip':
+        ylabel = 'precipitation (mm)'
+        title = period+'-period annual max precipitation: '+site_name
+        plotcol = 'MaxPrecip'
+
+    if hue != None:
+        #hue should usually be set to "model"
+        sns.lineplot(data=singleDF, x='year', y=plotcol, hue=hue, ax=ax)
+    else:
+        sns.lineplot(data=singleDF, x='year', y=plotcol, ax=ax)
+
+    ax.set_ylabel(ylabel)
+    ax.set_title(title)
+    ax.legend()
+    fig.tight_layout()
+    savenm = site_name+'_'+period+'_'+wflag+'.png'
+    fig.savefig(os.path.join(savedir, savenm), dpi=300)
+
