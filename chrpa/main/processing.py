@@ -839,24 +839,67 @@ def line_plot(site_name, period, singleDF, wflag, savedir, hue=None):
     fig.savefig(os.path.join(savedir, savenm), dpi=300)
 
 def rp_plots(site_name, period, weathDF, baseline, plot_dict):
-    # weathDF:  return value dataframe as output from pyextremes
-    # baseline:  dictionary containing the baseline return periods(rps) as the index with corresponding return levels(rls)
-    # plot_dict:  dictionary containing the following plot :  title, xlabel, ylabel, legend_loc
-    # period: baseline or future
+    """
+    Generates return period plots from fitted model.  Takes in a pandas data
+    frame as output from myextremes for a GEVD model fitted to extreme weather
+    data.  Requires data to have upper and lower confidence intervals.
+
+
+
+    Parameters
+    ----------
+    site_name : str
+        Name of site being analyzed
+
+    period : str
+        label for time period being analyzed (e.g., 'current' or 'future')
+
+    weathDF: pandas.DataFrame
+        Index:
+            return periods for which a GEVD model was fitted to
+        Columns:
+            Name: return values, dtype: float, description: 1D-array of return
+                values for requested return periods in fitted model
+
+            Name: lower ci, dtype: float, description: 1D-array of lower
+                confidence invertval bounds for requested return periods
+                in  fitted model
+
+            Name: upper ci, dtype: float, description: 1D-array of upper
+                confidence invertval bounds for requested return periods in
+                fitted model
+
+    baseline : dict
+        Dictionary mapping baseline return periods (usually historical
+        return periods) of interest to their corresponding return level
+
+    plot_dict : dict
+        Dictionary containing the desired values for the following plot
+            parameters: title (plot title), xlabel (x-axis label), ylabel
+            (y-axis label), legendloc(legend location), savedir (relative or
+            absolute path to
+
+    period : str
+        String that denotes which period is being analyzed, either "baseline"
+        or "future"
+
+    Returns
+    -------
+    None
+
+    """
 
     my_figsize = (8,6)
     fig, ax = plt.subplots(figsize=my_figsize)
     my_lineW = 3
 
-    #weathDF = currentPrecipRLs
-    #using weathDF to establish min-y and max-y
+    #using weathDF to establish standardized min-y and max-y
     miny = weathDF.loc[:,'return value'].iloc[0]*0.90
     maxy = weathDF.loc[:,'upper ci'].iloc[-1]*1.01
     minx = weathDF.index[0]-10
     maxx = weathDF.index[-1]+10
 
     ax.plot(weathDF.index, weathDF.loc[:,'return value'], label='fitted distribution', linewidth=my_lineW)
-    #rps = [2500, 6500]
     for (rp,rl)in baseline.items():
         if period == 'baseline':
             ax.plot([rp, rp], [miny, maxy], '--', label=str(int(rp))+' RP')
@@ -872,59 +915,3 @@ def rp_plots(site_name, period, weathDF, baseline, plot_dict):
     ax.legend(loc=plot_dict['legendloc'])
     savenm = site_name+'_'+period+'.png'
     fig.savefig(os.path.join(plot_dict['savedir'], savenm), dpi=300)
-
-def rp_plots_baseline(weathDF, rps, plot_dict):
-    # weathDF:  return value dataframe as output from pyextremes
-    # rps: list with return periods of interest
-    # plot_dict:  dictionary containing the following plot :  title, xlabel, ylabel, legend_loc
-
-
-    my_figsize = (8,6)
-    fig, ax = plt.subplots(figsize=my_figsize)
-    my_lineW = 3
-
-    #weathDF = currentPrecipRLs
-    #using weathDF to establish min-y and max-y
-    miny = weathDF.loc[:,'return value'].iloc[0]*0.90
-    maxy = weathDF.loc[:,'upper ci'].iloc[-1]*1.01
-
-    ax.plot(weathDF.index, weathDF.loc[:,'return value'], label='fitted distribution', linewidth=my_lineW)
-    #rps = [2500, 6500]
-    for rp in rps:
-        ax.plot([rp, rp], [0, maxy], '--', label=str(rp)+' rp')
-    ax.fill_between(weathDF.index, weathDF.loc[:,'lower ci'], weathDF.loc[:,'upper ci'], alpha=0.2)
-    ax.set_title(plot_dict['title'])
-    ax.set_xlabel(plot_dict['xlabel'])
-    ax.set_ylabel(plot_dict['ylabel'])
-    ax.set_ylim([miny,maxy])
-    ax.legend(loc=plot_dict['legend_loc'])
-
-
-
-def rp_plots_future(weathDF, baseline, plot_dict):
-    # weathDF:  return value dataframe as output from pyextremes
-    # baseline:  dictionary containing the baseline return periods(rps) as the index with corresponding return levels(rls)
-    # plot_dict:  dictionary containing the following plot :  title, xlabel, ylabel, legend_loc
-
-
-    my_figsize = (8,6)
-    fig, ax = plt.subplots(figsize=my_figsize)
-    my_lineW = 3
-
-    #weathDF = currentPrecipRLs
-    #using weathDF to establish min-y and max-y
-    miny = weathDF.loc[:,'return value'].iloc[0]*0.90
-    maxy = weathDF.loc[:,'upper ci'].iloc[-1]*1.01
-    minx = weathDF.index[0]-10
-    maxx = weathDF.index[-1]+10
-
-    ax.plot(weathDF.index, weathDF.loc[:,'return value'], label='fitted distribution', linewidth=my_lineW)
-    #rps = [2500, 6500]
-    for (rp,rl) in baseline.items():
-        ax.plot([minx, maxx], [rl, rl], '--', label='rl for '+str(rp)+'baseline rp')
-    ax.fill_between(weathDF.index, weathDF.loc[:,'lower ci'], weathDF.loc[:,'upper ci'], alpha=0.2)
-    ax.set_title(plot_dict['title'])
-    ax.set_xlabel(plot_dict['xlabel'])
-    ax.set_ylabel(plot_dict['ylabel'])
-    ax.set_ylim([miny,maxy])
-    ax.legend(loc=plot_dict['legend_loc'])
