@@ -20,7 +20,7 @@ pd.set_option('display.max_columns', None)
 def parse_data_orig(ncfilepath, offset):
     """
     Extracts latitude and longitude from a netCDF (network Common Data
-    Form) format and returns them in a data frame
+    Form) format and returns them in a data frame.
 
     Parameters
     ----------
@@ -55,7 +55,7 @@ def get_closest_point(site_loc, ncfilepath, offset):
     """
     Finds the closest data point between location of interest
     (site_loc) and weather stations captured by .nc files
-    (ncfilepath)
+    (ncfilepath).
 
     Parameters
     ----------
@@ -107,7 +107,7 @@ def get_closest_point(site_loc, ncfilepath, offset):
 def weather_data_calcs(nc_filepath, wstat_indices, ncwvar):
     """
     Extracts the weather and time data from a .nc file (nc_filepath)
-    for specified location(wstat_coords)
+    for specified location (wstat_coords).
 
     Parameters
     ----------
@@ -149,7 +149,7 @@ def make_ordered_time_weather_lists(nc_files, wstat_indices, ncwvar):
     Takes a list of .nc files corresponding to different time frames
     for a specific weather model and produces an ordered list of time
     and weather numpy arrays for an identified weather station location
-    (wstat_loc)
+    (wstat_loc).
 
     Parameters
     ----------
@@ -262,7 +262,7 @@ def convert_preciprate_to_mm(precip_df, tint, wvar):
 
     """
     Converts precipitation rate (in [kg/m^2 s]) to total depth (in mm)
-    when time interval in between timestamps is provided
+    when time interval in between timestamps is provided.
 
 
 
@@ -308,7 +308,7 @@ def convert_to_daily(w_df, tvar, aggfun):
 
     """
     Converts a weather data frame with hourly time stamps to daily time
-    stamps based on a user defined aggregation method
+    stamps based on a user defined aggregation method.
 
 
 
@@ -352,7 +352,7 @@ def convert_to_mm_daily(precip_df, tint, tvar, wvar, aggfun):
 
     """
     Converts precipitation rate (in [kg/m^2 s]) to daily total depth
-    (in mm) when time interval in between timestamps is provided
+    (in mm) when time interval in between timestamps is provided.
 
 
 
@@ -459,7 +459,7 @@ def summary_stat_fun(daily_df_current, daily_df_future, wmodel, site):
     """
     Takes in a pandas data frame for daily weather and outputs
     statstical summaries for that data set
-    (min, max, mean, and std. dev.)
+    (min, max, mean, and standard deviation).
 
 
 
@@ -585,7 +585,7 @@ def myextremes(ann_df, rp_array, wvar, alpha=None):
     generalized extreme value distribution (GEVD). The GEVD fit is then
     used to calculate return values for user-defined return period and
     user-defined confidence intervals. Takes the output of
-    get_annual_max for annDF
+    get_annual_max for annDF.
 
 
     Parameters
@@ -648,7 +648,7 @@ def find_rl_location(future_df, rt_lv):
     """
     Finds a return period corresponding to a specified return level in
     a data frame of return-periods/return-levels as output by
-    pyextremes
+    pyextremes.
 
 
     Parameters
@@ -729,8 +729,6 @@ def combined_boxplots(plotDF, wflag, site_name, savedir):
 
     """
     # "combined" = combined current and future
-    #plot_df has both, current and future, data
-    #do I want a columns dictionary????  Think about the workflow and how things end up
 
     if wflag == 'precip':
         plotcol = 'MaxPrecip'
@@ -806,11 +804,7 @@ def line_plot(site_name, period, singleDF, wflag, savedir, hue=None):
 
     """
 
-    #site_name = site name
-    #period = 'Current' or 'Future'
-    #single_df has only current or only future data
-    #wflag = weather variable = 'MaxWind' or 'MaxPrecip'
-    #hue should be set equal to the 'model' when having a dataframe with multiple models
+
 
     myfigsize=(8,6)
     fig, ax = plt.subplots(figsize=myfigsize)
