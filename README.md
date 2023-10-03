@@ -2,7 +2,7 @@
 Climate Hazards Return Period Analysis
 
 
-chrpa contains a series of functions to support climate hazard analyses. The functions facilitate analyses to understand how return periods and exceedance probability for straight-line wind and precipidation at key locations change under future climate conditions predicted by climate models.  The package also contains example datasets and tutorials to help demonstrate how the functions can be used.
+chrpa contains a series of functions to support climate hazard analyses. The functions facilitate analyses to understand how return periods and exceedance probability for straight-line wind and precipitation at key locations change under future climate conditions predicted by climate models.  The package also contains example datasets and tutorials to help demonstrate how the functions can be used.
 
 Installation
 =============
